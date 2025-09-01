@@ -42,8 +42,8 @@ function formatJsonValue(key: string, value: any): string {
   return `<span class="json-key">"${key}"</span>: ${formattedValue}`;
 }
 
-// 右側パネルを更新する関数
-function updatePropertiesPanel(feature: any, coordinates: { lng: number, lat: number, zoom: number }): void {
+// 右側パネルを更新する関数（複数地物対応）
+function updatePropertiesPanel(features: any[], coordinates: { lng: number, lat: number, zoom: number }): void {
   const panel = document.getElementById('propertiesPanel');
   const title = document.getElementById('featureTitle');
   const content = document.getElementById('propertiesContent');
@@ -51,7 +51,11 @@ function updatePropertiesPanel(feature: any, coordinates: { lng: number, lat: nu
   if (!panel || !title || !content) return;
 
   // タイトルを設定
-  title.textContent = `${feature.layer.id} (${feature.geometry?.type || 'Unknown'})`;
+  if (features.length > 0) {
+    title.textContent = `地物情報 (${features.length}件)`;
+  } else {
+    title.textContent = '座標情報';
+  }
 
   // 座標情報
   const coordinatesHtml = `
@@ -63,28 +67,42 @@ function updatePropertiesPanel(feature: any, coordinates: { lng: number, lat: nu
     </div>
   `;
 
-  // プロパティを整理
-  const properties = feature.properties || {};
-  const filteredProperties = Object.entries(properties)
-    .filter(([, value]) => value !== null && value !== undefined && value !== '')
-    .sort(([a], [b]) => a.localeCompare(b));
+  // 複数地物の属性を表示
+  let featuresHtml = '';
+  if (features.length > 0) {
+    featuresHtml = features.map((feature, index) => {
+      const properties = feature.properties || {};
+      const filteredProperties = Object.entries(properties)
+        .filter(([, value]) => value !== null && value !== undefined && value !== '')
+        .sort(([a], [b]) => a.localeCompare(b));
 
-  // JSON形式で美しく表示
-  let propertiesHtml = '';
-  if (filteredProperties.length > 0) {
-    propertiesHtml = `
-      <div class="json-viewer">
-        <strong>🏷️ 属性情報</strong><br>
-        {<div class="json-object">
-          ${filteredProperties.map(([key, value]) => formatJsonValue(key, value)).join(',<br>')}
-        </div>}
-      </div>
-    `;
+      const featureHeader = `
+        <div style="background: #f8f9fa; padding: 10px; margin: 15px 0 10px 0; border-radius: 4px; border-left: 3px solid #007bff;">
+          <strong>🏷️ 地物 ${index + 1}: ${feature.layer.id}</strong><br>
+          <small style="color: #666;">ジオメトリ: ${feature.geometry?.type || 'Unknown'}</small>
+        </div>
+      `;
+
+      let propertiesHtml = '';
+      if (filteredProperties.length > 0) {
+        propertiesHtml = `
+          <div class="json-viewer" style="margin-left: 10px;">
+            {<div class="json-object">
+              ${filteredProperties.map(([key, value]) => formatJsonValue(key, value)).join(',<br>')}
+            </div>}
+          </div>
+        `;
+      } else {
+        propertiesHtml = '<div style="margin-left: 10px; color: #666; font-style: italic;">属性なし</div>';
+      }
+
+      return featureHeader + propertiesHtml;
+    }).join('');
   } else {
-    propertiesHtml = '<div class="json-viewer"><strong>🏷️ 属性情報</strong><br>属性なし</div>';
+    featuresHtml = '<div style="color: #666; font-style: italic; margin: 15px 0;">この位置に地物はありません</div>';
   }
 
-  content.innerHTML = coordinatesHtml + propertiesHtml;
+  content.innerHTML = coordinatesHtml + featuresHtml;
   panel.style.display = 'block';
 }
 
@@ -135,28 +153,19 @@ function setupClickHandler(map: maplibregl.Map): void {
     const features = map.queryRenderedFeatures(e.point);
     
     if (features.length > 0) {
-      const feature = features[0];
-      
-      // 右側パネルを更新
-      updatePropertiesPanel(feature, {
+      // 全ての地物を右側パネルに表示
+      updatePropertiesPanel(features, {
         lng: e.lngLat.lng,
         lat: e.lngLat.lat,
         zoom: map.getZoom()
       });
     } else {
-      // 地物がない場合は座標のみ表示
-      updatePropertiesPanel(
-        {
-          layer: { id: '座標情報' },
-          geometry: { type: 'Point' },
-          properties: {}
-        },
-        {
-          lng: e.lngLat.lng,
-          lat: e.lngLat.lat,
-          zoom: map.getZoom()
-        }
-      );
+      // 地物がない場合は空配列で座標のみ表示
+      updatePropertiesPanel([], {
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat,
+        zoom: map.getZoom()
+      });
     }
   });
 
