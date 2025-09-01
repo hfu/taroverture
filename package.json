@@ -1,0 +1,35 @@
+{
+  "name": "taroverture",
+  "version": "1.0.0",
+  "description": "Overture Maps Vector Tiles by Taro M., consumed through x-24b",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hfu/taroverture.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hfu/taroverture/issues"
+  },
+  "homepage": "https://github.com/hfu/taroverture#readme",
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3"
+  },
+  "dependencies": {
+    "maplibre-gl": "^5.7.0"
+  }
+}
