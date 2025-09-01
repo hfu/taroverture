@@ -31,10 +31,10 @@
 |-----------|----------------|----------|---------|
 | bathymetry | Polygon | 0-13 | depth, cartography |
 | infrastructure | Line/Polygon | 13-13 | class, subtype, height, surface |
-| land | Polygon | 0-13 | class, subtype, elevation, surface |
+| land | Line/Polygon | 0-13 | class, subtype, elevation, surface |
 | land_cover | Polygon | 0-13 | subtype, cartography |
-| land_use | Polygon | 6-13 | class, subtype, elevation, surface |
-| water | Polygon | 0-13 | class, subtype, is_intermittent, is_salt |
+| land_use | Line/Polygon | 6-13 | class, subtype, elevation, surface |
+| water | Line/Polygon | 0-13 | class, subtype, is_intermittent, is_salt |
 
 ### 3. buildings（建築物）
 
@@ -78,25 +78,31 @@
 
 1. **基盤レイヤー（面）**
    - bathymetry（水深）
-   - land（陸地）
+   - land-fill（陸地面）
    - land_cover（土地被覆）
-   - water（水域）
-   - land_use（土地利用）
+   - water-fill（水域面）
+   - land-use-fill（土地利用面）
 
-2. **行政区域（面・線）**
+2. **基盤境界線**
+   - land-line（陸地境界）
+   - water-line（河川など）
+   - land-use-line（土地利用境界）
+
+3. **行政区域（面・線）**
    - division_area（行政区域面）
    - division_boundary（行政区域境界）
 
-3. **交通レイヤー（線・点）**
+4. **交通レイヤー（線・点）**
    - segment（道路セグメント）
    - connector（道路接続点）
 
-4. **建築物レイヤー（面）**
+5. **建築物・インフラレイヤー（面・線）**
+   - infrastructure-fill（インフラ面）
+   - infrastructure-line（インフラ線）
    - building（建築物）
    - building_part（建築物部分）
-   - infrastructure（インフラ）
 
-5. **地点・施設レイヤー（点）**
+6. **地点・施設レイヤー（点）**
    - place（地点・施設）
    - division（行政区域中心点）
    - address（住所）
@@ -104,13 +110,19 @@
 ## ジオメトリタイプ別分類
 
 ### 面（Polygon）
-- bathymetry, land, land_cover, water, land_use
+
+- bathymetry, land_cover
+- land（面部分）, water（面部分）, land_use（面部分）
 - division_area
 - building, building_part
+- infrastructure（面部分）
 
 ### 線（LineString）
+
 - division_boundary
 - segment
+- land（線部分）, water（線部分）, land_use（線部分）
+- infrastructure（線部分）
 
 ### 点（Point）
 - address

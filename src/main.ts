@@ -9,6 +9,93 @@ const TOKYO_STATION = {
   zoom: 12,
 };
 
+// JSON を美しく表示するためのヘルパー関数
+function formatJsonValue(key: string, value: any): string {
+  if (value === null) {
+    return `<span class="json-key">"${key}"</span>: <span class="json-null">null</span>`;
+  }
+  
+  const valueType = typeof value;
+  let formattedValue: string;
+  
+  switch (valueType) {
+    case 'string':
+      formattedValue = `<span class="json-string">"${value}"</span>`;
+      break;
+    case 'number':
+      formattedValue = `<span class="json-number">${value}</span>`;
+      break;
+    case 'boolean':
+      formattedValue = `<span class="json-boolean">${value}</span>`;
+      break;
+    case 'object':
+      if (Array.isArray(value)) {
+        formattedValue = `<span class="json-string">[${value.join(', ')}]</span>`;
+      } else {
+        formattedValue = `<span class="json-string">${JSON.stringify(value)}</span>`;
+      }
+      break;
+    default:
+      formattedValue = `<span class="json-string">"${value}"</span>`;
+  }
+  
+  return `<span class="json-key">"${key}"</span>: ${formattedValue}`;
+}
+
+// 右側パネルを更新する関数
+function updatePropertiesPanel(feature: any, coordinates: { lng: number, lat: number, zoom: number }): void {
+  const panel = document.getElementById('propertiesPanel');
+  const title = document.getElementById('featureTitle');
+  const content = document.getElementById('propertiesContent');
+  
+  if (!panel || !title || !content) return;
+
+  // タイトルを設定
+  title.textContent = `${feature.layer.id} (${feature.geometry?.type || 'Unknown'})`;
+
+  // 座標情報
+  const coordinatesHtml = `
+    <div class="coordinates-info">
+      <strong>📍 座標情報</strong><br>
+      経度: ${coordinates.lng.toFixed(6)}<br>
+      緯度: ${coordinates.lat.toFixed(6)}<br>
+      ズーム: ${coordinates.zoom.toFixed(1)}
+    </div>
+  `;
+
+  // プロパティを整理
+  const properties = feature.properties || {};
+  const filteredProperties = Object.entries(properties)
+    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  // JSON形式で美しく表示
+  let propertiesHtml = '';
+  if (filteredProperties.length > 0) {
+    propertiesHtml = `
+      <div class="json-viewer">
+        <strong>🏷️ 属性情報</strong><br>
+        {<div class="json-object">
+          ${filteredProperties.map(([key, value]) => formatJsonValue(key, value)).join(',<br>')}
+        </div>}
+      </div>
+    `;
+  } else {
+    propertiesHtml = '<div class="json-viewer"><strong>🏷️ 属性情報</strong><br>属性なし</div>';
+  }
+
+  content.innerHTML = coordinatesHtml + propertiesHtml;
+  panel.style.display = 'block';
+}
+
+// パネルを閉じる関数
+function closePropertiesPanel(): void {
+  const panel = document.getElementById('propertiesPanel');
+  if (panel) {
+    panel.style.display = 'none';
+  }
+}
+
 // 地図の初期化
 function initializeMap(): maplibregl.Map {
   const map = new maplibregl.Map({
@@ -49,65 +136,47 @@ function setupClickHandler(map: maplibregl.Map): void {
     
     if (features.length > 0) {
       const feature = features[0];
-      const properties = feature.properties || {};
       
-      // プロパティを整理して表示
-      const displayProperties = Object.entries(properties)
-        .filter(([, value]) => value !== null && value !== undefined && value !== '')
-        .slice(0, 10) // 最大10個のプロパティを表示
-        .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
-        .join('<br>');
-
-      const popupContent = `
-        <div style="max-width: 300px;">
-          <h4 style="margin: 0 0 10px 0; color: #333;">
-            ${feature.layer.id} (${feature.geometry?.type || 'Unknown'})
-          </h4>
-          <div style="font-size: 12px; line-height: 1.4;">
-            ${displayProperties || '属性情報なし'}
-          </div>
-          <div style="margin-top: 10px; font-size: 11px; color: #666;">
-            座標: ${e.lngLat.lng.toFixed(4)}, ${e.lngLat.lat.toFixed(4)}
-          </div>
-        </div>
-      `;
-
-      new maplibregl.Popup({
-        closeButton: true,
-        closeOnClick: true,
-        maxWidth: '400px',
-      })
-        .setLngLat(e.lngLat)
-        .setHTML(popupContent)
-        .addTo(map);
+      // 右側パネルを更新
+      updatePropertiesPanel(feature, {
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat,
+        zoom: map.getZoom()
+      });
     } else {
-      // 地物がない場所をクリックした場合は座標のみ表示
-      const popupContent = `
-        <div style="font-size: 12px;">
-          <strong>座標:</strong><br>
-          経度: ${e.lngLat.lng.toFixed(6)}<br>
-          緯度: ${e.lngLat.lat.toFixed(6)}<br>
-          ズーム: ${map.getZoom().toFixed(1)}
-        </div>
-      `;
-
-      new maplibregl.Popup({
-        closeButton: true,
-        closeOnClick: true,
-      })
-        .setLngLat(e.lngLat)
-        .setHTML(popupContent)
-        .addTo(map);
+      // 地物がない場合は座標のみ表示
+      updatePropertiesPanel(
+        {
+          layer: { id: '座標情報' },
+          geometry: { type: 'Point' },
+          properties: {}
+        },
+        {
+          lng: e.lngLat.lng,
+          lat: e.lngLat.lat,
+          zoom: map.getZoom()
+        }
+      );
     }
   });
 
   // マウスカーソルの変更
-  map.on('mouseenter', 'place', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
+  const interactiveLayers = [
+    'place', 'building', 'building-part', 
+    'infrastructure-fill', 'infrastructure-line',
+    'water-fill', 'water-line',
+    'land-fill', 'land-line',
+    'land-use-fill', 'land-use-line'
+  ];
+  
+  interactiveLayers.forEach(layerId => {
+    map.on('mouseenter', layerId, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
 
-  map.on('mouseleave', 'place', () => {
-    map.getCanvas().style.cursor = '';
+    map.on('mouseleave', layerId, () => {
+      map.getCanvas().style.cursor = '';
+    });
   });
 }
 
@@ -142,6 +211,12 @@ function startApp(): void {
       setupClickHandler(map);
       setupErrorHandling(map);
     });
+
+    // 閉じるボタンのイベントリスナーを設定
+    const closeButton = document.getElementById('closeButton');
+    if (closeButton) {
+      closeButton.addEventListener('click', closePropertiesPanel);
+    }
 
     console.log('地図の初期化完了');
   } catch (error) {

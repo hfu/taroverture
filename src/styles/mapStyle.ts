@@ -54,14 +54,35 @@ function createBasePolygonLayers(): LayerSpecification[] {
         'fill-opacity': 0.8,
       },
     },
-    // 陸地
+    // 陸地（面）
     {
-      id: 'land',
+      id: 'land-fill',
       type: 'fill',
       source: 'base',
       'source-layer': 'land',
+      filter: ['==', ['geometry-type'], 'Polygon'],
       paint: {
         'fill-color': COLORS.land,
+      },
+    },
+    // 陸地（線）- 海岸線など
+    {
+      id: 'land-line',
+      type: 'line',
+      source: 'base',
+      'source-layer': 'land',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      paint: {
+        'line-color': '#999999',
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          0, 0.5,
+          10, 1,
+          15, 2,
+        ],
+        'line-opacity': 0.6,
       },
     },
     // 土地被覆
@@ -82,24 +103,46 @@ function createBasePolygonLayers(): LayerSpecification[] {
         'fill-opacity': 0.6,
       },
     },
-    // 水域
+    // 水域（面）
     {
-      id: 'water',
+      id: 'water-fill',
       type: 'fill',
       source: 'base',
       'source-layer': 'water',
+      filter: ['==', ['geometry-type'], 'Polygon'],
       paint: {
         'fill-color': COLORS.water,
         'fill-opacity': 0.8,
       },
     },
-    // 土地利用
+    // 水域（線）- 河川など
     {
-      id: 'land-use',
+      id: 'water-line',
+      type: 'line',
+      source: 'base',
+      'source-layer': 'water',
+      filter: ['==', ['geometry-type'], 'LineString'],
+      paint: {
+        'line-color': COLORS.water,
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          0, 1,
+          10, 3,
+          15, 6,
+        ],
+        'line-opacity': 0.8,
+      },
+    },
+    // 土地利用（面）
+    {
+      id: 'land-use-fill',
       type: 'fill',
       source: 'base',
       'source-layer': 'land_use',
       minzoom: 6,
+      filter: ['==', ['geometry-type'], 'Polygon'],
       paint: {
         'fill-color': [
           'case',
@@ -110,6 +153,27 @@ function createBasePolygonLayers(): LayerSpecification[] {
           COLORS.landUse.residential, // デフォルト
         ],
         'fill-opacity': 0.4,
+      },
+    },
+    // 土地利用（線）- 境界など
+    {
+      id: 'land-use-line',
+      type: 'line',
+      source: 'base',
+      'source-layer': 'land_use',
+      minzoom: 6,
+      filter: ['==', ['geometry-type'], 'LineString'],
+      paint: {
+        'line-color': '#666666',
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          6, 0.5,
+          12, 1,
+          16, 2,
+        ],
+        'line-opacity': 0.5,
       },
     },
   ];
@@ -211,16 +275,37 @@ function createTransportationLayers(): LayerSpecification[] {
 // 建築物レイヤー
 function createBuildingLayers(): LayerSpecification[] {
   return [
-    // インフラ
+    // インフラ（面）
     {
-      id: 'infrastructure',
+      id: 'infrastructure-fill',
       type: 'fill',
       source: 'base',
       'source-layer': 'infrastructure',
       minzoom: 13,
+      filter: ['==', ['geometry-type'], 'Polygon'],
       paint: {
         'fill-color': '#8B4513',
         'fill-opacity': 0.8,
+      },
+    },
+    // インフラ（線）
+    {
+      id: 'infrastructure-line',
+      type: 'line',
+      source: 'base',
+      'source-layer': 'infrastructure',
+      minzoom: 13,
+      filter: ['==', ['geometry-type'], 'LineString'],
+      paint: {
+        'line-color': '#8B4513',
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          13, 1,
+          16, 3,
+        ],
+        'line-opacity': 0.8,
       },
     },
     // 建築物
@@ -267,8 +352,8 @@ function createPointLayers(): LayerSpecification[] {
           'interpolate',
           ['linear'],
           ['zoom'],
-          0, 2,
-          15, 6,
+          0, 1,
+          15, 3,
         ],
         'circle-opacity': 0.8,
         'circle-stroke-color': '#FFFFFF',

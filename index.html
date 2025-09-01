@@ -33,6 +33,86 @@
       margin: 5px 0;
       font-size: 14px;
     }
+    .properties-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 350px;
+      max-height: calc(100vh - 20px);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: none;
+      overflow: hidden;
+    }
+    .properties-header {
+      background: #f8f9fa;
+      padding: 15px 20px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .properties-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-button:hover {
+      color: #333;
+    }
+    .properties-content {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 80px);
+    }
+    .json-viewer {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .json-key {
+      color: #0451a5;
+      font-weight: 600;
+    }
+    .json-string {
+      color: #a31515;
+    }
+    .json-number {
+      color: #098658;
+    }
+    .json-boolean {
+      color: #0000ff;
+    }
+    .json-null {
+      color: #795e26;
+    }
+    .json-object {
+      margin-left: 20px;
+    }
+    .coordinates-info {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      border-left: 3px solid #007bff;
+    }
     .attribution {
       position: absolute;
       bottom: 5px;
@@ -55,6 +135,15 @@
     <h3>Taroverture</h3>
     <p>Overture Maps ベクトルタイルデモ</p>
     <p>地図をクリックして地物の情報を表示</p>
+  </div>
+  <div class="properties-panel" id="propertiesPanel">
+    <div class="properties-header">
+      <h3 id="featureTitle">地物情報</h3>
+      <button class="close-button" id="closeButton">×</button>
+    </div>
+    <div class="properties-content" id="propertiesContent">
+      <!-- 動的に生成される内容 -->
+    </div>
   </div>
   <div class="attribution">
     データ: <a href="https://overturemaps.org/" target="_blank" rel="noopener">Overture Maps</a> | 

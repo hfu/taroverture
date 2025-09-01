@@ -73,27 +73,40 @@ Overture Maps Vector Tiles by Taro M., consumed through x-24b
 - **GitHub Pages**: 静的サイトホスティング（`/taroverture/`ベースパス）
 
 ### スタイル生成戦略
+
 - `src/styles/mapStyle.ts`でプログラマティックにMapLibreスタイルを生成
 - レイヤータイプ（面・線・点）別にスタイル定義関数を分離
 - LAYERS.mdの分析結果に基づく表示優先度設定
 - カスタム色パレットによる統一感のあるデザイン
+- **ジオメトリ混在対応**: `infrastructure`, `water`, `land`, `land_use`レイヤーを面・線に分離
+
+### UI/UX設計
+
+- **右側属性パネル**: 地物クリック時に半透明パネルで詳細情報を表示
+- **JSON ビューア**: 属性情報を色分けされた見やすい形式で表示
+- **レスポンシブ対応**: モバイルデバイスでも快適な操作性
+- **視覚的階層**: 地物タイプとジオメトリ情報を明確に表示
 
 ### レイヤー表示順序（下→上）
-1. **基盤レイヤー**: bathymetry → land → land_cover → water → land_use
-2. **行政区域**: division_area → division_boundary
-3. **交通**: segment → connector
-4. **建築物**: infrastructure → building → building_part
-5. **地点**: place → division → address
+
+1. **基盤レイヤー**: bathymetry → land-fill → land_cover → water-fill → land-use-fill
+2. **基盤境界線**: land-line → water-line → land-use-line
+3. **行政区域**: division_area → division_boundary
+4. **交通**: segment → connector
+5. **建築物・インフラ**: infrastructure-fill → infrastructure-line → building → building_part
+6. **地点**: place（半径縮小） → division → address
 
 ### インタラクション機能
 
-- **地図クリック**: 地物属性をポップアップ表示（最大10属性）
+- **地図クリック**: 地物属性を右側パネルに美しく表示
+- **属性表示**: JSON形式で色分けされた見やすい属性情報
 - **座標表示**: クリック位置の経緯度・ズームレベル表示
 - **ナビゲーション**: ズーム・パンコントロール
 - **スケール**: スケールバー表示
 - **Globe Control**: 3D地球儀表示切り替え
 - **Geolocation**: 現在位置の取得・表示・追跡機能
 - **URL Hash**: 地図の状態（位置・ズーム）をURLに保存
+- **右側パネル**: 半透明パネルで多数の属性も快適に表示
 
 ### 開発・デプロイフロー
 ```bash
