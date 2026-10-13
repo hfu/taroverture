@@ -7,12 +7,12 @@ Overture Maps Vector Tiles by Taro M., consumed through x-24b
   - docs のサイトは Vite でビルドすること。そのために必要な設定を行うこと
   - MapLibre GL JS は最新のバージョンを用いること
 - そのウェブサイトでは、次の URL で tile.json が供給されるベクトルタイルを全て用いること
-  - https://tunnel.optgeo.org/martin/addresses
-  - https://tunnel.optgeo.org/martin/base
-  - https://tunnel.optgeo.org/martin/buildings
-  - https://tunnel.optgeo.org/martin/divisions
-  - https://tunnel.optgeo.org/martin/places
-  - https://tunnel.optgeo.org/martin/transportation
+  - https://stars.optgeo.org/overture_addresses
+  - https://stars.optgeo.org/overture_base
+  - https://stars.optgeo.org/overture_buildings
+  - https://stars.optgeo.org/overture_divisions
+  - https://stars.optgeo.org/overture_places
+  - https://stars.optgeo.org/overture_transportation
 - まず、上記の tile.json を分析して、どのようなレイヤーがどのようなズームレベルの範囲にあるか確認すること。
   - Web へのアクセスが CLI で必要な場合は、curl または aria2c を用いること
   - 一時ファイルを保存することなく、なるべくパイプラインで処理すること

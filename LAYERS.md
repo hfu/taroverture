@@ -6,12 +6,12 @@
 
 | タイルソース | 名前 | ズーム範囲 | URL |
 |-------------|------|-----------|-----|
-| addresses | Overture addresses | 0-14 | https://tunnel.optgeo.org/martin/addresses |
-| base | Overture base | 0-13 | https://tunnel.optgeo.org/martin/base |
-| buildings | Overture buildings | 0-14 | https://tunnel.optgeo.org/martin/buildings |
-| divisions | data/divisions.pmtiles | 0-12 | https://tunnel.optgeo.org/martin/divisions |
-| places | data/places.pmtiles | 0-15 | https://tunnel.optgeo.org/martin/places |
-| transportation | Overture transportation | 0-14 | https://tunnel.optgeo.org/martin/transportation |
+| addresses | Overture addresses | 0-14 | https://stars.optgeo.org/overture_addresses |
+| base | Overture base | 0-13 | https://stars.optgeo.org/overture_base |
+| buildings | Overture buildings | 0-14 | https://stars.optgeo.org/overture_buildings |
+| divisions | data/divisions.pmtiles | 0-12 | https://stars.optgeo.org/overture_divisions |
+| places | data/places.pmtiles | 0-15 | https://stars.optgeo.org/overture_places |
+| transportation | Overture transportation | 0-14 | https://stars.optgeo.org/overture_transportation |
 
 ## レイヤー詳細
 

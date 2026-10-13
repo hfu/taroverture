@@ -2,12 +2,12 @@ import type { StyleSpecification, LayerSpecification } from 'maplibre-gl';
 
 // タイルソース定義
 const TILE_SOURCES = {
-  addresses: 'https://tunnel.optgeo.org/martin/addresses',
-  base: 'https://tunnel.optgeo.org/martin/base',
-  buildings: 'https://tunnel.optgeo.org/martin/buildings',
-  divisions: 'https://tunnel.optgeo.org/martin/divisions',
-  places: 'https://tunnel.optgeo.org/martin/places',
-  transportation: 'https://tunnel.optgeo.org/martin/transportation',
+  addresses: 'https://stars.optgeo.org/overture_addresses',
+  base: 'https://stars.optgeo.org/overture_base',
+  buildings: 'https://stars.optgeo.org/overture_buildings',
+  divisions: 'https://stars.optgeo.org/overture_divisions',
+  places: 'https://stars.optgeo.org/overture_places',
+  transportation: 'https://stars.optgeo.org/overture_transportation',
 };
 
 // 基本色パレット
